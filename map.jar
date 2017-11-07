@@ -1,0 +1,192 @@
+import java.io.IOException;
+
+import java.util.Iterator;
+import java.util.StringTokenizer;
+
+import java.util.Vector;
+import org.apache.hadoop.conf.Configuration; 
+import org.apache.hadoop.fs.Path;
+
+import org.apache.hadoop.io.IntWritable; 
+import org.apache.hadoop.io.LongWritable; 
+import org.apache.hadoop.io.Text; 
+import org.apache.hadoop.mapreduce.Job; 
+import org.apache.hadoop.mapreduce.Mapper; 
+import org.apache.hadoop.mapreduce.Reducer;
+
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat; 
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+
+
+public class Navie	{
+
+public static void main(String args[]) throws Exception {
+
+Configuration conf = new Configuration();
+
+Job job = Job.getInstance(conf, "Navie");
+
+job.setJarByClass(Navie.class);
+
+job.setMapperClass(TmpltMapper.class); job.setCombinerClass(TmpltCombiner.class); job.setReducerClass(TmpltReducer.class);
+
+job.setOutputKeyClass(Text.class); job.setOutputValueClass(IntWritable.class);
+
+FileInputFormat.addInputPath(job, new Path(args[0])); FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+System.exit(job.waitForCompletion(true) ? 0 : 1);
+
+}
+
+
+public static class TmpltMapper extends
+
+Mapper<LongWritable, Text, Text, IntWritable> { @Override
+public void map(LongWritable key, Text value, Mapper.Context
+context)
+
+throws IOException, InterruptedException { context.write(new Text("MKEY"), value);
+
+
+}
+}
+
+public static class TmpltCombiner extends Reducer<Text, Text, Text, Text> {
+@Override
+public void reduce(Text key, Iterable<Text> values,
+
+Context context) throws IOException, InterruptedException { Iterator<Text> itr = values.iterator();
+
+Vector<String> age = new Vector<String>(); Vector<String> inc = new Vector<String>(); Vector<String> stu = new Vector<String>(); Vector<String> crd = new Vector<String>();
+Vector<String> buy = new Vector<String>(); while (itr.hasNext()) {
+
+final String text = itr.next().toString(); StringTokenizer t = new StringTokenizer(text,",");
+
+age.add(t.nextToken());
+inc.add(t.nextToken());
+stu.add(t.nextToken());
+crd.add(t.nextToken());
+buy.add(t.nextToken());
+}
+int tl=buy.size();
+
+int yc=0;
+int nc=0;
+int a1yc=0;
+int a1nc=0;
+int a2yc=0;
+
+int a2nc=0;
+int a3yc=0;
+int a3nc=0;
+int hyc=0;
+int hnc=0;
+
+int myc=0;
+int mnc=0;
+int lyc=0;
+int lnc=0;
+int yyc=0;
+
+int ync=0;
+int nyc=0;
+int nnc=0;
+int fyc=0;
+int fnc=0;
+
+int eyc=0;
+int enc=0;
+for (int i=0;i<tl; i++){
+if(buy.get(i).equals("ys"))	yc++;
+if(buy.get(i).equals("no"))	nc++;
+
+if((age.get(i).equals("<=30"))&(buy.get(i).equals("ys"))) a1yc++; if((age.get(i).equals("<=30"))&(buy.get(i).equals("no"))) a1nc++; if((age.get(i).equals("31..40"))&(buy.get(i).equals("ys"))) a2yc++; if((age.get(i).equals("31..40"))&(buy.get(i).equals("no"))) a2nc++; if((age.get(i).equals(">40"))&(buy.get(i).equals("ys"))) a3yc++; if((age.get(i).equals(">40"))&(buy.get(i).equals("no"))) a3nc++; if((inc.get(i).equals("hi"))&(buy.get(i).equals("ys"))) hyc++; if((inc.get(i).equals("hi"))&(buy.get(i).equals("no"))) hnc++; if((inc.get(i).equals("md"))&(buy.get(i).equals("ys"))) myc++;
+
+
+if((inc.get(i).equals("md"))&(buy.get(i).equals("no"))) mnc++; if((inc.get(i).equals("lw"))&(buy.get(i).equals("ys"))) lyc++; if((inc.get(i).equals("lw"))&(buy.get(i).equals("no"))) lnc++; if((stu.get(i).equals("ys"))&(buy.get(i).equals("ys"))) yyc++; if((stu.get(i).equals("ys"))&(buy.get(i).equals("no"))) ync++; if((stu.get(i).equals("no"))&(buy.get(i).equals("ys"))) nyc++; if((stu.get(i).equals("no"))&(buy.get(i).equals("no"))) nnc++; if((crd.get(i).equals("fr"))&(buy.get(i).equals("ys"))) fyc++;
+if((crd.get(i).equals("fr"))&(buy.get(i).equals("no"))) fnc++; if((crd.get(i).equals("ex"))&(buy.get(i).equals("ys"))) eyc++; if((crd.get(i).equals("ex"))&(buy.get(i).equals("no"))) enc++; }
+
+context.write(key, new
+
+Text(yc+"_"+nc+"_"+a1yc+"_"+a1nc+"_"+a2yc+"_"+a2nc+"_"+a3yc+"_"+a3nc+"_"+hyc+
+
+"_"+hnc+"_"+myc+"_"+mnc+"_"+lyc+"_"+lnc+"_"+yyc+"_"+ync+"_"+nyc+"_"+nnc+"_"+f
+yc+"_"+fnc+"_"+eyc+"_"+enc+"_"+tl));
+
+
+}
+
+}
+
+public static class TmpltReducer extends Reducer<Text, Text, Text, Text> {
+@Override
+
+public void reduce(Text key, Iterable<Text> values, Context context) throws IOException,
+
+InterruptedException {
+Iterator<Text> itr = values.iterator();
+int yc=0;
+
+int nc=0;
+int a1yc=0;
+int a1nc=0;
+int a2yc=0;
+int a2nc=0;
+
+int a3yc=0;
+int a3nc=0;
+int hyc=0;
+int hnc=0;
+int myc=0;
+
+int mnc=0;
+int lyc=0;
+int lnc=0;
+int yyc=0;
+int ync=0;
+
+int nyc=0;
+int nnc=0;
+int fyc=0;
+int fnc=0;
+int eyc=0;
+
+int enc=0;
+int tl=0;
+
+while (itr.hasNext()) {
+
+final String text = itr.next().toString(); StringTokenizer st = new StringTokenizer(text,"_");
+
+yc+=Integer.parseInt(st.nextToken()); nc+=Integer.parseInt(st.nextToken()); a1yc+=Integer.parseInt(st.nextToken()); a1nc+=Integer.parseInt(st.nextToken()); a2yc+=Integer.parseInt(st.nextToken()); a2nc+=Integer.parseInt(st.nextToken()); a3yc+=Integer.parseInt(st.nextToken()); a3nc+=Integer.parseInt(st.nextToken()); hyc+=Integer.parseInt(st.nextToken());
+hnc+=Integer.parseInt(st.nextToken());
+myc+=Integer.parseInt(st.nextToken());
+
+mnc+=Integer.parseInt(st.nextToken());
+lyc+=Integer.parseInt(st.nextToken());
+lnc+=Integer.parseInt(st.nextToken());
+yyc+=Integer.parseInt(st.nextToken());
+ync+=Integer.parseInt(st.nextToken());
+
+nyc+=Integer.parseInt(st.nextToken());
+nnc+=Integer.parseInt(st.nextToken());
+fyc+=Integer.parseInt(st.nextToken());
+fnc+=Integer.parseInt(st.nextToken());
+eyc+=Integer.parseInt(st.nextToken());
+
+enc+=Integer.parseInt(st.nextToken());
+tl += Integer.parseInt(st.nextToken());
+
+}
+context.write(key, new Text(yc+" "+nc+" "+a1yc+" "+a1nc+"
+
+"+a2yc+" "+a2nc+" "+a3yc+" "+a3nc+" "+hyc+" "+hnc+" "+myc+" "+mnc+" "+lyc+"
+"+lnc+" "+yyc+" "+ync+" "+nyc+" "+nnc+" "+fyc+" "+fnc+" "+eyc+" "+enc+"
+"+tl));
+
+}
+
+}
+
+}
